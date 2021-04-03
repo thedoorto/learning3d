@@ -5,11 +5,11 @@ ninja
 open3d
 tensorboardX
 tqdm
-# sklearn
+sklearn
 scipy
 numpy
 transforms3d
 pycuda
 
-scikit-learn==0.22.1
-cuda
+# scikit-learn==0.22.1
+# cuda
