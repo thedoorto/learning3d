@@ -24,6 +24,7 @@ def download_modelnet40():
 	if not os.path.exists(DATA_DIR):
 		os.mkdir(DATA_DIR)
 	if not os.path.exists(os.path.join(DATA_DIR, 'modelnet40_ply_hdf5_2048')):
+		#www = "https://www.dropbox.com/s/ea4arug1itihb8f/modelnet40_hdf5_2048.zip"
 		www = 'https://shapenet.cs.stanford.edu/media/modelnet40_ply_hdf5_2048.zip'
 		zipfile = os.path.basename(www)
 		os.system('wget %s; unzip %s' % (www, zipfile))
@@ -45,6 +46,11 @@ def load_data(train, use_normals):
 		f.close()
 		all_data.append(data)
 		all_label.append(label)
+
+
+	print("!!!!!")
+	print(all_data)
+
 	all_data = np.concatenate(all_data, axis=0)
 	all_label = np.concatenate(all_label, axis=0)
 	return all_data, all_label
@@ -63,7 +69,7 @@ def create_random_transform(dtype, max_rotation_deg, max_translation):
 	return vec
 
 def jitter_pointcloud(pointcloud, sigma=0.04, clip=0.05):
-	# N, C = pointcloud.shape
+	# N, C = pointcloud.shapeshapenet
 	sigma = 0.04*np.random.random_sample()
 	pointcloud += torch.empty(pointcloud.shape).normal_(mean=0, std=sigma).clamp(-clip, clip)
 	return pointcloud
@@ -212,6 +218,7 @@ class RegistrationData(Dataset):
 		self.partial_source = partial_source
 		self.noise = noise
 		self.additional_params = additional_params
+		self.use_rri = False
 
 		if self.algorithm == 'PCRNet' or self.algorithm == 'iPCRNet':
 			from .. ops.transform_functions import PCRNetTransform
@@ -256,12 +263,12 @@ class RegistrationData(Dataset):
 		if self.use_rri:
 			template, source = template.numpy(), source.numpy()
 			template = np.concatenate([template, self.get_rri(template - template.mean(axis=0), self.nearest_neighbors)], axis=1)
-            source = np.concatenate([source, self.get_rri(source - source.mean(axis=0), self.nearest_neighbors)], axis=1)
+			source = np.concatenate([source, self.get_rri(source - source.mean(axis=0), self.nearest_neighbors)], axis=1)
 			template, source = torch.tensor(template).float(), torch.tensor(source).float()
 
 		igt = self.transforms.igt
 		
-		if self.additional_params['use_masknet']:
+		if self.additional_params.get('use_masknet', '') != '':
 			if self.partial_source and self.partial_template:
 				return template, source, igt, self.template_mask, self.source_mask
 			elif self.partial_source:

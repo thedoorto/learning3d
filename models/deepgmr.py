@@ -127,7 +127,7 @@ class PointNet(nn.Module):
 class DeepGMR(nn.Module):
 	def __init__(self, use_rri=True, feature_model=None, nearest_neighbors=20):
 		super(DeepGMR, self).__init__()
-		self.backbone = feature_model if is not None else PointNet(use_rri=use_rri, nearest_neighbors=nearest_neighbors)
+		self.backbone = feature_model if not None else PointNet(use_rri=use_rri, nearest_neighbors=nearest_neighbors)
 		self.use_rri = use_rri
 
 	def forward(self, template, source):
@@ -154,11 +154,11 @@ class DeepGMR(nn.Module):
 		transformed_source = transform.transform_point_cloud(source, est_T[:, :3, :3], est_T[:, :3, 3])
 
 		result = {'est_R': est_T[:, :3, :3],
-				  'est_t': est_T[:, :3, 3],
+				  'est_t': est_T[:, :3, 3],	
 				  'est_R_inverse': est_T_inverse[:, :3, :3],
 				  'est_t_inverese': est_T_inverse[:, :3, 3],
 				  'est_T': est_T,
-				  'est_T_inverse': est_T_inverse
+				  'est_T_inverse': est_T_inverse,
 				  'r': template_features - source_features,
 				  'transformed_source': transformed_source}
 
