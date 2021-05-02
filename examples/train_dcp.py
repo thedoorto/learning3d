@@ -143,11 +143,11 @@ def train(args, model, train_loader, test_loader, boardio, textio, checkpoint):
 					'optimizer' : optimizer.state_dict(),}
 			torch.save(snap, 'checkpoints/%s/models/best_model_snap.t7' % (args.exp_name))
 			torch.save(model.state_dict(), 'checkpoints/%s/models/best_model.t7' % (args.exp_name))
-			torch.save(model.feature_model.state_dict(), 'checkpoints/%s/models/best_ptnet_model.t7' % (args.exp_name))
+			torch.save(model.emb_nn.state_dict(), 'checkpoints/%s/models/best_ptnet_model.t7' % (args.exp_name))
 
 		torch.save(snap, 'checkpoints/%s/models/model_snap.t7' % (args.exp_name))
 		torch.save(model.state_dict(), 'checkpoints/%s/models/model.t7' % (args.exp_name))
-		torch.save(model.feature_model.state_dict(), 'checkpoints/%s/models/ptnet_model.t7' % (args.exp_name))
+		torch.save(model.emb_nn.state_dict(), 'checkpoints/%s/models/ptnet_model.t7' % (args.exp_name))
 		
 		boardio.add_scalar('Train Loss', train_loss, epoch+1)
 		boardio.add_scalar('Test Loss', test_loss, epoch+1)
