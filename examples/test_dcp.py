@@ -119,7 +119,38 @@ def test_one_epoch(device, model, test_loader):
 	return test_loss
 
 def test(args, model, test_loader):
-	test_loss, test_accuracy = test_one_epoch(args.device, model, test_loader)
+	test_loss, test_accuracy = test_one(args.device, model, test_loader)
+
+def test_one(device, model, test_loader):
+	model.eval()
+	test_loss = 0.0
+	pred  = 0.0
+	count = 0
+	template, source, igt = next(iter(test_loader))
+	transformations = get_transformations(igt)
+	transformations = [t.to(device) for t in transformations]
+	R_ab, translation_ab, R_ba, translation_ba = transformations
+
+	template = template.to(device)
+	source = source.to(device)
+	igt = igt.to(device)
+
+	output = model(template, source)
+	display_open3d(template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])
+
+	identity = torch.eye(3).cuda().unsqueeze(0).repeat(template.shape[0], 1, 1)
+	loss_val = torch.nn.functional.mse_loss(torch.matmul(output['est_R'].transpose(2, 1), R_ab), identity) \
+		+ torch.nn.functional.mse_loss(output['est_t'], translation_ab[:,:,0])
+
+	cycle_loss = torch.nn.functional.mse_loss(torch.matmul(output['est_R_'].transpose(2, 1), R_ba), identity) \
+		+ torch.nn.functional.mse_loss(output['est_t_'], translation_ba[:,:,0])
+	loss_val = loss_val + cycle_loss * 0.1
+
+	test_loss += loss_val.item()
+	count += 1
+
+	test_loss = float(test_loss)/count
+	return test_loss
 
 def options():
 	parser = argparse.ArgumentParser(description='Point Cloud Registration')
@@ -170,7 +201,7 @@ def main():
 	args.device = torch.device(args.device)
 
 	o3d.visualization.draw_geometries = draw_geometries
-	
+
 	# Create PointNet Model.
 	dgcnn = DGCNN(emb_dims=args.emb_dims)
 	model = DCP(feature_model=dgcnn, cycle=True)
