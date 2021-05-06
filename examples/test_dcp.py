@@ -119,7 +119,7 @@ def test_one_epoch(device, model, test_loader):
 	return test_loss
 
 def test(args, model, test_loader):
-	test_loss, test_accuracy = test_one(args.device, model, test_loader)
+	test_loss, test_accuracy = test_one_epoch(args.device, model, test_loader)
 
 def test_one(device, model, test_loader):
 	model.eval()
