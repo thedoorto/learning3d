@@ -154,7 +154,7 @@ def test_one(device, model, test_loader):
 
 def options():
 	parser = argparse.ArgumentParser(description='Point Cloud Registration')
-	parser.add_argument('--exp_name', type=str, default='exp_ipcrnet', metavar='N',
+	parser.add_argument('--exp_name', type=str, default='exp_dcp', metavar='N',
 						help='Name of the experiment')
 	parser.add_argument('--dataset_path', type=str, default='ModelNet40',
 						metavar='PATH', help='path to the input dataset') # like '/path/to/ModelNet40'
