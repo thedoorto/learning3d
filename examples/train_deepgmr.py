@@ -21,18 +21,6 @@ if BASE_DIR[-8:] == 'examples':
 from learning3d.models import DeepGMR
 from learning3d.data_utils import RegistrationData, ModelNet40Data
 
-def display_open3d(template, source, transformed_source):
-	template_ = o3d.geometry.PointCloud()
-	source_ = o3d.geometry.PointCloud()
-	transformed_source_ = o3d.geometry.PointCloud()
-	template_.points = o3d.utility.Vector3dVector(template)
-	source_.points = o3d.utility.Vector3dVector(source + np.array([0,0,0]))
-	transformed_source_.points = o3d.utility.Vector3dVector(transformed_source)
-	template_.paint_uniform_color([1, 0, 0])
-	source_.paint_uniform_color([0, 1, 0])
-	transformed_source_.paint_uniform_color([0, 0, 1])
-	o3d.visualization.draw_geometries([template_, source_, transformed_source_])
-
 def rotation_error(R, R_gt):
 	cos_theta = (torch.einsum('bij,bij->b', R, R_gt) - 1) / 2
 	cos_theta = torch.clamp(cos_theta, -1, 1)

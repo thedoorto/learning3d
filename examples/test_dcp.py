@@ -117,7 +117,7 @@ def test_one(device, model, test_loader):
 	igt = igt.to(device)
 
 	output = model(template, source)
-	display_open3d(template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])
+	display_open3d("plot", template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])
 
 	identity = torch.eye(3).cuda().unsqueeze(0).repeat(template.shape[0], 1, 1)
 	loss_val = torch.nn.functional.mse_loss(torch.matmul(output['est_R'].transpose(2, 1), R_ab), identity) \
@@ -180,8 +180,6 @@ def main():
 	if not torch.cuda.is_available():
 		args.device = 'cpu'
 	args.device = torch.device(args.device)
-
-	o3d.visualization.draw_geometries = draw_geometries
 
 	# Create PointNet Model.
 	dgcnn = DGCNN(emb_dims=args.emb_dims)

@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.utils.data
 import torchvision
+import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
@@ -22,8 +23,32 @@ from learning3d.models import PointNet, iPCRNet
 from learning3d.losses import ChamferDistanceLoss
 from learning3d.data_utils import RegistrationData, ModelNet40Data
 
+def plot_geometries(label, geometries):
+    plt.rcParams['figure.figsize'] = [16, 16]
+    ax = plt.axes(projection='3d')
+    ax.axis("off")
+    ax.view_init(45, 45)
+ 
+    for geometry in geometries:
+        geometry_type = geometry.get_geometry_type()
+        
+        if geometry_type == o3d.geometry.Geometry.Type.PointCloud:
+            points = np.asarray(geometry.points)
+            colors = None
+            if geometry.has_colors():
+                colors = np.asarray(geometry.colors)
+            elif geometry.has_normals():
+                colors = (0.5, 0.5, 0.5) + np.asarray(geometry.normals) * 0.5
+            else:
+                geometry.paint_uniform_color((1.0, 0.0, 0.0))
+                colors = np.asarray(geometry.colors)
 
-def display_open3d(template, source, transformed_source):
+            ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
+    # if i % 5 == 0:
+    plt.savefig(label + '.png')
+    # plt.show()
+
+def display_open3d(label, template, source, transformed_source):
 	template_ = o3d.geometry.PointCloud()
 	source_ = o3d.geometry.PointCloud()
 	transformed_source_ = o3d.geometry.PointCloud()
@@ -33,7 +58,7 @@ def display_open3d(template, source, transformed_source):
 	template_.paint_uniform_color([1, 0, 0])
 	source_.paint_uniform_color([0, 1, 0])
 	transformed_source_.paint_uniform_color([0, 0, 1])
-	o3d.visualization.draw_geometries([template_, source_, transformed_source_])
+	plot_geometries(label, [template_, source_, transformed_source_])
 
 def test_one_epoch(device, model, test_loader):
 	model.eval()
@@ -48,7 +73,8 @@ def test_one_epoch(device, model, test_loader):
 		igt = igt.to(device)
 
 		output = model(template, source)
-		display_open3d(template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])		
+		label = "plot" + str(i)
+		display_open3d(label, template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])		
 		loss_val = ChamferDistanceLoss()(template, output['transformed_source'])
 
 		test_loss += loss_val.item()
