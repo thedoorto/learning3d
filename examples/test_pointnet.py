@@ -9,7 +9,6 @@ import torch
 import torch.utils.data
 import torchvision
 import matplotlib.pyplot as plt
-import plotly.graph_objects as go
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
 from tqdm import tqdm
