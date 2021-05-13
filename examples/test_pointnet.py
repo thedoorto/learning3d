@@ -8,6 +8,7 @@ import numpy as np
 import torch
 import torch.utils.data
 import torchvision
+import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 from torch.utils.data import DataLoader
 from tensorboardX import SummaryWriter
@@ -23,6 +24,22 @@ from learning3d.models import PointNet
 from learning3d.models import Classifier
 from learning3d.data_utils import ClassificationData, ModelNet40Data
 
+def draw_cloud(cloud):
+	points = np.asarray(cloud.points)
+	colors = None
+	if cloud.has_colors():
+    	colors = np.asarray(cloud.colors)
+	elif cloud.has_normals():
+    	colors = (0.5, 0.5, 0.5) + np.asarray(cloud.normals) * 0.5
+	else:
+    	geometry.paint_uniform_color((1.0, 0.0, 0.0))
+    	colors = np.asarray(geometry.colors)
+	ax = plt.axes(projection='3d')
+	ax.view_init(90, -90)
+	ax.axis("off")
+	ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
+	plt.show()
+	
 def draw_geometries(geometries):
     graph_objects = []
 
@@ -68,11 +85,36 @@ def draw_geometries(geometries):
     )
     fig.show()
 
+def plot_geometries(i, geometries):
+    plt.rcParams['figure.figsize'] = [16, 16]
+    ax = plt.axes(projection='3d')
+    ax.axis("off")
+    ax.view_init(45, 45)
+ 
+    for geometry in geometries:
+        geometry_type = geometry.get_geometry_type()
+        
+        if geometry_type == o3d.geometry.Geometry.Type.PointCloud:
+            points = np.asarray(geometry.points)
+            colors = None
+            if geometry.has_colors():
+                colors = np.asarray(geometry.colors)
+            elif geometry.has_normals():
+                colors = (0.5, 0.5, 0.5) + np.asarray(geometry.normals) * 0.5
+            else:
+                geometry.paint_uniform_color((1.0, 0.0, 0.0))
+                colors = np.asarray(geometry.colors)
+
+            ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
+    if i % 5 == 0:
+      plt.savefig('plot' + str(i) + '.png')
+    # plt.show()
+
 def display_open3d(template):
 	template_ = o3d.geometry.PointCloud()
 	template_.points = o3d.utility.Vector3dVector(template)
 	# template_.paint_uniform_color([1, 0, 0])
-	o3d.visualization.draw_geometries([template_])
+	plot_geometries([template_])
 
 def test_one_epoch(device, model, test_loader, testset):
 	model.eval()
@@ -153,7 +195,7 @@ def main():
 	args.device = torch.device(args.device)
 
 	o3d.visualization.draw_geometries = draw_geometries
-	
+
 	# Create PointNet Model.
 	ptnet = PointNet(emb_dims=args.emb_dims, use_bn=True)
 	model = Classifier(feature_model=ptnet)
