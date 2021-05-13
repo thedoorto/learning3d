@@ -85,7 +85,7 @@ def draw_geometries(geometries):
     )
     fig.show()
 
-def plot_geometries(i, geometries):
+def plot_geometries(label, geometries):
     plt.rcParams['figure.figsize'] = [16, 16]
     ax = plt.axes(projection='3d')
     ax.axis("off")
@@ -106,15 +106,15 @@ def plot_geometries(i, geometries):
                 colors = np.asarray(geometry.colors)
 
             ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
-    if i % 5 == 0:
-      plt.savefig('plot' + str(i) + '.png')
+    # if i % 5 == 0:
+    plt.savefig(label + '.png')
     # plt.show()
 
-def display_open3d(template):
+def display_open3d(label, template):
 	template_ = o3d.geometry.PointCloud()
 	template_.points = o3d.utility.Vector3dVector(template)
 	# template_.paint_uniform_color([1, 0, 0])
-	plot_geometries([template_])
+	plot_geometries(label, [template_])
 
 def test_one_epoch(device, model, test_loader, testset):
 	model.eval()
@@ -131,9 +131,10 @@ def test_one_epoch(device, model, test_loader, testset):
 		output = model(points)
 		loss_val = torch.nn.functional.nll_loss(
 			torch.nn.functional.log_softmax(output, dim=1), target, size_average=False)
-		print("Ground Truth Label: ", testset.get_shape(target[0].item()))
+		gtLabel = testset.get_shape(target[0].item())
+		print("Ground Truth Label: ", gtLabel)
 		print("Predicted Label:    ", testset.get_shape(torch.argmax(output[0]).item()))
-		display_open3d(points.detach().cpu().numpy()[0])
+		display_open3d(gtLabel, points.detach().cpu().numpy()[0])
 
 		test_loss += loss_val.item()
 		count += output.size(0)

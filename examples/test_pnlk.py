@@ -22,7 +22,7 @@ from learning3d.models import PointNet, PointNetLK
 from learning3d.losses import FrobeniusNormLoss, RMSEFeaturesLoss
 from learning3d.data_utils import RegistrationData, ModelNet40Data
 
-def plot_geometries(i, geometries):
+def plot_geometries(label, geometries):
     plt.rcParams['figure.figsize'] = [16, 16]
     ax = plt.axes(projection='3d')
     ax.axis("off")
@@ -43,11 +43,11 @@ def plot_geometries(i, geometries):
                 colors = np.asarray(geometry.colors)
 
             ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
-    if i % 5 == 0:
-      plt.savefig('plot' + str(i) + '.png')
+    # if i % 5 == 0:
+    plt.savefig(label + '.png')
     # plt.show()
 
-def display_open3d(template, source, transformed_source):
+def display_open3d(label, template, source, transformed_source):
 	template_ = o3d.geometry.PointCloud()
 	source_ = o3d.geometry.PointCloud()
 	transformed_source_ = o3d.geometry.PointCloud()
@@ -57,7 +57,7 @@ def display_open3d(template, source, transformed_source):
 	template_.paint_uniform_color([1, 0, 0])
 	source_.paint_uniform_color([0, 1, 0])
 	transformed_source_.paint_uniform_color([0, 0, 1])
-	plot_geometries([template_, source_, transformed_source_])
+	plot_geometries(label, [template_, source_, transformed_source_])
 
 def test_one_epoch(device, model, test_loader):
 	model.eval()
@@ -72,8 +72,8 @@ def test_one_epoch(device, model, test_loader):
 		igt = igt.to(device)
 
 		output = model(template, source)
-
-		display_open3d(template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])
+		label = "plot" + str(i)
+		display_open3d(label, template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])
 		loss_val = FrobeniusNormLoss()(output['est_T'], igt) + RMSEFeaturesLoss()(output['r'])
 
 		test_loss += loss_val.item()
