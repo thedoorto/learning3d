@@ -66,7 +66,7 @@ def display_open3d(label, template, source, transformed_source):
 	transformed_source_.paint_uniform_color([0, 0, 1])
 	plot_geometries(label, [template_, source_, transformed_source_])
 
-def test_one_epoch(device, model, test_loader):
+def test_one_epoch(name, device, model, test_loader):
 	model.eval()
 	test_loss = 0.0
 	pred  = 0.0
@@ -85,7 +85,7 @@ def test_one_epoch(device, model, test_loader):
 		output = model(template, source, R_ab, translation_ab.squeeze(2))
 		
 		if i % 5 == 0:
-			label = "plot" + str(i)
+			label = name + str(i)
 			display_open3d(label, template.detach().cpu().numpy()[0], source.detach().cpu().numpy()[0], output['transformed_source'].detach().cpu().numpy()[0])
 
 		test_loss += output['loss'].item()
@@ -95,7 +95,7 @@ def test_one_epoch(device, model, test_loader):
 	return test_loss
 
 def test(args, model, test_loader):
-	test_loss = test_one_epoch(args.device, model, test_loader)
+	test_loss = test_one_epoch(args.exp_name, args.device, model, test_loader)
 
 def options():
 	parser = argparse.ArgumentParser(description='Point Cloud Registration')

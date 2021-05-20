@@ -81,7 +81,7 @@ def test_one_epoch(args, net, test_loader):
         print("Loss: ", loss_1)
 
         if i % 5 == 0:
-            label = "plot" + str(i)
+            label = args.exp_name + str(i)
             display_open3d(label, pc1.detach().cpu().numpy()[0], pc2.detach().cpu().numpy()[0], pc1_.detach().cpu().numpy()[0])
         
         total_loss += loss_1.item() * batch_size        

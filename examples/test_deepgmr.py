@@ -72,7 +72,7 @@ def rmse(pts, T, T_gt):
 	pts_gt = pts @ T_gt[:, :3, :3].transpose(1, 2) + T_gt[:, :3, 3].unsqueeze(1)
 	return torch.norm(pts_pred - pts_gt, dim=2).mean(dim=1)
 
-def test_one_epoch(device, model, test_loader):
+def test_one_epoch(name, device, model, test_loader):
 	model.eval()
 	test_loss = 0.0
 	pred  = 0.0
@@ -89,7 +89,7 @@ def test_one_epoch(device, model, test_loader):
 		output = model(template, source)
 
 		if i % 5 == 0:
-			label = "plot" + str(i)
+			label = name + str(i)
 			display_open3d(label, template.detach().cpu().numpy()[0, :, :3], source.detach().cpu().numpy()[0, :, :3], output['transformed_source'].detach().cpu().numpy()[0])
 
 		eye = torch.eye(4).expand_as(igt).to(igt.device)
@@ -112,7 +112,7 @@ def test_one_epoch(device, model, test_loader):
 	return test_loss
 
 def test(args, model, test_loader):
-	test_loss = test_one_epoch(args.device, model, test_loader)
+	test_loss = test_one_epoch(args.exp_name, args.device, model, test_loader)
 
 def options():
 	parser = argparse.ArgumentParser(description='Point Cloud Registration')
