@@ -43,7 +43,7 @@ def plot_geometries(label, geometries):
                 colors = np.asarray(geometry.colors)
 
             ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
-    # if i % 5 == 0:
+    
     plt.savefig(label + '.png')
     # plt.show()
 
@@ -87,8 +87,10 @@ def test_one_epoch(device, model, test_loader):
 		igt = igt.to(device)
 
 		output = model(template, source)
-		label = "plot" + str(i)
-		display_open3d(label, template.detach().cpu().numpy()[0, :, :3], source.detach().cpu().numpy()[0, :, :3], output['transformed_source'].detach().cpu().numpy()[0])
+
+		if i % 5 == 0:
+			label = "plot" + str(i)
+			display_open3d(label, template.detach().cpu().numpy()[0, :, :3], source.detach().cpu().numpy()[0, :, :3], output['transformed_source'].detach().cpu().numpy()[0])
 
 		eye = torch.eye(4).expand_as(igt).to(igt.device)
 		mse1 = F.mse_loss(output['est_T_inverse'] @ torch.inverse(igt), eye)

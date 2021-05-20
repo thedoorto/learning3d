@@ -44,7 +44,7 @@ def plot_geometries(label, geometries):
                 colors = np.asarray(geometry.colors)
 
             ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
-    # if i % 5 == 0:
+    
     plt.savefig(label + '.png')
     # plt.show()
 
@@ -72,7 +72,9 @@ def test_one_epoch(device, model, test_loader, testset):
 		gtLabel = testset.get_shape(target[0].item())
 		print("Ground Truth Label: ", gtLabel)
 		print("Predicted Label:    ", testset.get_shape(torch.argmax(output[0]).item()))
-		display_open3d(gtLabel, points.detach().cpu().numpy()[0])
+		
+		if i % 5 == 0:
+			display_open3d(gtLabel, points.detach().cpu().numpy()[0])
 
 		test_loss += loss_val.item()
 		count += output.size(0)

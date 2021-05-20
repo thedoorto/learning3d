@@ -46,7 +46,9 @@ def test_one_epoch(device, model, test_loader):
 		output = model(points)
 		loss_val = ChamferDistanceLoss()(points, output['coarse_output'])
 		print("Loss Val: ", loss_val)
-		display_open3d(points[0].detach().cpu().numpy(), output['coarse_output'][0].detach().cpu().numpy())
+
+		if i % 5 == 0:
+			display_open3d(points[0].detach().cpu().numpy(), output['coarse_output'][0].detach().cpu().numpy())
 
 		test_loss += loss_val.item()
 		count += 1

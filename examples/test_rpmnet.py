@@ -90,7 +90,7 @@ def plot_geometries(label, geometries):
                 colors = np.asarray(geometry.colors)
 
             ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
-    # if i % 5 == 0:
+    
     plt.savefig(label + '.png')
     # plt.show()
 
@@ -119,8 +119,10 @@ def test_one_epoch(device, model, test_loader):
 		igt = igt.to(device)
 
 		output = model(template, source)
-		label = "plot" + str(i)
-		display_open3d(label, template.detach().cpu().numpy()[0,:,:3], source.detach().cpu().numpy()[0,:,:3], output['transformed_source'].detach().cpu().numpy()[0])
+		
+		if i % 5 == 0:
+			label = "plot" + str(i)
+			display_open3d(label, template.detach().cpu().numpy()[0,:,:3], source.detach().cpu().numpy()[0,:,:3], output['transformed_source'].detach().cpu().numpy()[0])
 		loss_val = FrobeniusNormLoss()(output['est_T'], igt)
 
 		test_loss += loss_val.item()
@@ -130,7 +132,7 @@ def test_one_epoch(device, model, test_loader):
 	return test_loss
 
 def test(args, model, test_loader):
-	test_loss, test_accuracy = test_one_epoch(args.device, model, test_loader)
+	test_loss = test_one_epoch(args.device, model, test_loader)
 
 def options():
 	parser = argparse.ArgumentParser(description='Point Cloud Registration')

@@ -40,7 +40,7 @@ def plot_geometries(label, geometries):
                 colors = np.asarray(geometry.colors)
 
             ax.scatter(points[:,0], points[:,1], points[:,2], s=1, c=colors)
-    # if i % 5 == 0:
+    
     plt.savefig(label + '.png')
     # plt.show()
 
@@ -79,8 +79,11 @@ def test_one_epoch(args, net, test_loader):
         pc1, pc2 = pc1.permute(0,2,1), pc2.permute(0,2,1)
         pc1_ = pc1 - flow_pred
         print("Loss: ", loss_1)
-        label = "plot" + str(i)
-        display_open3d(label, pc1.detach().cpu().numpy()[0], pc2.detach().cpu().numpy()[0], pc1_.detach().cpu().numpy()[0])
+
+        if i % 5 == 0:
+            label = "plot" + str(i)
+            display_open3d(label, pc1.detach().cpu().numpy()[0], pc2.detach().cpu().numpy()[0], pc1_.detach().cpu().numpy()[0])
+        
         total_loss += loss_1.item() * batch_size        
 
     return total_loss * 1.0 / num_examples

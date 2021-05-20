@@ -27,7 +27,7 @@ def download_modelnet40():
 		#www = "https://www.dropbox.com/s/ea4arug1itihb8f/modelnet40_hdf5_2048.zip"
 		www = 'https://shapenet.cs.stanford.edu/media/modelnet40_ply_hdf5_2048.zip'
 		zipfile = os.path.basename(www)
-		os.system('wget %s; unzip %s' % (www, zipfile))
+		os.system('wget --no-check-certificate %s; unzip %s' % (www, zipfile))
 		os.system('mv %s %s' % (zipfile[:-4], DATA_DIR))
 		os.system('rm %s' % (zipfile))
 
