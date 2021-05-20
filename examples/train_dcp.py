@@ -33,7 +33,7 @@ class IOStream:
 	def __init__(self, path):
 		self.f = open(path, 'a')
 
-	def cprint(self, text):
+	def print(text)self, text):
 		print(text)
 		self.f.write(text + '\n')
 		self.f.flush()
@@ -80,7 +80,7 @@ def test_one_epoch(device, model, test_loader):
 
 def test(args, model, test_loader, textio):
 	test_loss = test_one_epoch(args.device, model, test_loader)
-	textio.cprint('Validation Loss: %f & Validation Accuracy: %f'%(test_loss, test_accuracy))
+	textio.cprint('Validation Loss: %f'%(test_loss))
 
 def train_one_epoch(device, model, train_loader, optimizer):
 	model.train()
