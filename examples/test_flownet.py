@@ -91,7 +91,8 @@ def test_one_epoch(args, net, test_loader):
 
 def test(args, net, test_loader):
     test_loss = test_one_epoch(args, net, test_loader)
-
+    print('Validation Loss: %f'%(test_loss))
+    
 def main():
     parser = argparse.ArgumentParser(description='Point Cloud Registration')
     parser.add_argument('--model', type=str, default='flownet', metavar='N',

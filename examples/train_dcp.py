@@ -33,7 +33,7 @@ class IOStream:
 	def __init__(self, path):
 		self.f = open(path, 'a')
 
-	def print(text)self, text):
+	def cprint(self, text):
 		print(text)
 		self.f.write(text + '\n')
 		self.f.flush()

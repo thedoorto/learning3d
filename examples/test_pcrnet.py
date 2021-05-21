@@ -88,7 +88,7 @@ def test_one_epoch(name, device, model, test_loader):
 
 def test(args, model, test_loader):
 	test_loss = test_one_epoch(args.exp_name, args.device, model, test_loader)
-
+	print('Validation Loss: %f'%(test_loss))
 
 def options():
 	parser = argparse.ArgumentParser(description='Point Cloud Registration')

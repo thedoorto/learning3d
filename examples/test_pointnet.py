@@ -90,7 +90,8 @@ def test_one_epoch(device, model, test_loader, testset):
 
 def test(args, model, test_loader, testset):
 	test_loss, test_accuracy = test_one_epoch(args.device, model, test_loader, testset)
-
+	print('Validation Loss: %f & Validation Accuracy: %f'%(test_loss, test_accuracy))
+	
 def options():
 	parser = argparse.ArgumentParser(description='Point Cloud Registration')
 	parser.add_argument('--dataset_path', type=str, default='ModelNet40',
